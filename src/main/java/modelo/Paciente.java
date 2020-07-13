@@ -10,27 +10,37 @@ package modelo;
  * @author Felipe
  */
 public class Paciente {
-    private int cedula;
-    private String id;
+    private int id;
+    private String cedula;
     private String nombre;
     private String direccion;
     private String telefono;
     private String fecha_nacimiento;
     private String nacionalidad;
 
-    public int getCedula() {
+    public Paciente(String cedula, int id, String nombre, String direccion, String telefono, String fecha_nacimiento, String nacionalidad) {
+        this.cedula = cedula;
+        this.id = id;
+        this.nombre = nombre;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        this.fecha_nacimiento = fecha_nacimiento;
+        this.nacionalidad = nacionalidad;
+    }
+
+    public String getCedula() {
         return cedula;
     }
 
-    public void setCedula(int cedula) {
+    public void setCedula(String cedula) {
         this.cedula = cedula;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -73,5 +83,11 @@ public class Paciente {
     public void setNacionalidad(String nacionalidad) {
         this.nacionalidad = nacionalidad;
     }
+
+    @Override
+    public String toString() {
+        return  nombre ;
+    }
     
+
 }

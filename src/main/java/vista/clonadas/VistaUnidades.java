@@ -49,7 +49,7 @@ public class VistaUnidades extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jTextFieldNombre = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanelTitulo.setBackground(new java.awt.Color(255, 255, 255));
         jPanelTitulo.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -234,7 +234,8 @@ public class VistaUnidades extends javax.swing.JFrame {
         limpiarTabla();
 
         String json = peticion.sendGet(nameRecurso);
-        construirTabla(json);
+        if(!json.isBlank())
+            construirTabla(json);
         System.out.println(json);
 
     }

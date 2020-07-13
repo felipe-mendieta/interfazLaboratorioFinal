@@ -5,10 +5,13 @@
  */
 package vista;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Area;
@@ -29,12 +32,21 @@ public class Pacientes extends javax.swing.JFrame {
     private DefaultComboBoxModel modelArea;
     private final String nameRecurso = "/api/paciente/";
     private Http peticion;
+    JFrame ventana;
 
     public Pacientes() {
         initComponents();
         extrasSetup();
         inicializarComponentes();
     }
+
+    public Pacientes(JFrame ventana) {
+        initComponents();
+        extrasSetup();
+        inicializarComponentes();
+        this.ventana = ventana;
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -58,7 +70,7 @@ public class Pacientes extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -108,6 +120,11 @@ public class Pacientes extends javax.swing.JFrame {
         jPanel4.setLayout(new java.awt.BorderLayout());
 
         jButton3.setText("SELECCIONAR");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         jPanel4.add(jButton3, java.awt.BorderLayout.CENTER);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -149,6 +166,10 @@ public class Pacientes extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         actualizar();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        obtenerPacienteSelect();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -256,16 +277,52 @@ private void extrasSetup() {
     }
 
     public Paciente obtenerPacienteSelect() {
-        
+
         int identificador = this.jTablePruebas.getSelectedRow();
 
         if (identificador == -1) {
             JOptionPane.showMessageDialog(null, "Seleccione una fila");
         } else {
-            var index =(Integer)  modelTabla.getValueAt(identificador, 0);
-            String jsonPaciente=recuperarDatosParaTabla();
+            var index =modelTabla.getValueAt(identificador, 0);
+
+            String jsonStringPac = peticion.sendGet("/api/paciente/" + index);
+            JsonObject jsonObject = new JsonParser().parse(jsonStringPac).getAsJsonObject();
+            var idPac = jsonObject.get("id").getAsInt();
+            var cedula = jsonObject.get("cedula").getAsString();
+            var nombre = jsonObject.get("nombre").getAsString();
+            var direccion = jsonObject.get("direccion").getAsString();
+            var telefono = jsonObject.get("telefono").getAsString();
+            var fecha_nacimiento = jsonObject.get("fecha_nacimiento").getAsString();
+            var nacionalidad = jsonObject.get("nacionalidad").getAsString();
+            Paciente p=new Paciente(cedula, idPac, nombre, direccion, telefono, fecha_nacimiento, nacionalidad);
+            ((Principal)ventana).setPaciente(p);
+            this.dispose();
         }
-        return new Paciente();
+        return null;
+    }
+    public Paciente obtenerPacienteSelectExam() {
+
+        int identificador = this.jTablePruebas.getSelectedRow();
+
+        if (identificador == -1) {
+            JOptionPane.showMessageDialog(null, "Seleccione una fila");
+        } else {
+            var index =modelTabla.getValueAt(identificador, 0);
+
+            String jsonStringPac = peticion.sendGet("/api/paciente/" + index);
+            JsonObject jsonObject = new JsonParser().parse(jsonStringPac).getAsJsonObject();
+            var idPac = jsonObject.get("id").getAsInt();
+            var cedula = jsonObject.get("cedula").getAsString();
+            var nombre = jsonObject.get("nombre").getAsString();
+            var direccion = jsonObject.get("direccion").getAsString();
+            var telefono = jsonObject.get("telefono").getAsString();
+            var fecha_nacimiento = jsonObject.get("fecha_nacimiento").getAsString();
+            var nacionalidad = jsonObject.get("nacionalidad").getAsString();
+            Paciente p=new Paciente(cedula, idPac, nombre, direccion, telefono, fecha_nacimiento, nacionalidad);
+            ((Principal)ventana).setPaciente(p);
+            this.dispose();
+        }
+        return null;
     }
 
 }

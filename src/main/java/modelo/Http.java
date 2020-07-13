@@ -56,6 +56,11 @@ public class Http {
             var objectMapper = new ObjectMapper();
             String requestBody = objectMapper
                     .writeValueAsString(values);
+            System.out.println("Request body 1:"+requestBody);
+            var a=requestBody.replace("\\", "");
+            var b=a.replace("\"{", "{");
+            requestBody=b.replace("}\"", "}");
+            System.out.println("Request body 2:"+requestBody);
             System.out.println("object mapper"+objectMapper.toString());
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -63,10 +68,10 @@ public class Http {
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
-
+            
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             
-            System.out.println(response.body());
+            System.out.println("Request body"+response.body());
             return response.body();
         } catch (JsonProcessingException ex) {
             Logger.getLogger(Http.class.getName()).log(Level.SEVERE, null, ex);

@@ -26,6 +26,7 @@ public class VistaPruebas extends javax.swing.JFrame {
     private DefaultComboBoxModel modelArea;
     private final String nameRecurso = "/pruebas";
     private Http peticion;
+
     public VistaPruebas() {
         initComponents();
         extrasSetup();
@@ -68,7 +69,7 @@ public class VistaPruebas extends javax.swing.JFrame {
         jComboBoxUnidad = new javax.swing.JComboBox<>();
         jButton2 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanelTitulo.setBackground(new java.awt.Color(255, 255, 255));
         jPanelTitulo.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -151,7 +152,7 @@ public class VistaPruebas extends javax.swing.JFrame {
         jPanelInfo.add(jLabel5);
 
         jTextFieldLimSup.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jTextFieldLimSup.setText("1");
+        jTextFieldLimSup.setText("100");
         jPanelInfo.add(jTextFieldLimSup);
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -159,7 +160,7 @@ public class VistaPruebas extends javax.swing.JFrame {
         jPanelInfo.add(jLabel6);
 
         jTextFieldLimInf.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jTextFieldLimInf.setText("100");
+        jTextFieldLimInf.setText("1");
         jPanelInfo.add(jTextFieldLimInf);
 
         jPanelInfoExtra.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -186,6 +187,11 @@ public class VistaPruebas extends javax.swing.JFrame {
         jPanelInfoExtra.add(jComboBoxUnidad);
 
         jButton2.setText("Unidades");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jPanelInfoExtra.add(jButton2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -224,7 +230,7 @@ public class VistaPruebas extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonGrabarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGrabarActionPerformed
-       grabar();
+        grabar();
     }//GEN-LAST:event_jButtonGrabarActionPerformed
 
     private void jButtonActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActualizarActionPerformed
@@ -236,9 +242,14 @@ public class VistaPruebas extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonEliminarActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        VistaAreas areas=new VistaAreas();
+        VistaAreas areas = new VistaAreas();
         areas.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        VistaUnidades unidades = new VistaUnidades();
+        unidades.setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -318,12 +329,11 @@ public class VistaPruebas extends javax.swing.JFrame {
         modelTabla.addColumn("L.Superior");
         modelTabla.addColumn("Area");
         modelTabla.addColumn("Unidad");
-        
 
         jTablePruebas.setModel(modelTabla);
         jComboBoxArea.setModel(modelArea);
         jComboBoxUnidad.setModel(modelUnidades);
-        peticion=new Http();
+        peticion = new Http();
         recuperarDatosParaTabla();
         addDataComboUnidad();
         addDataComboArea();
@@ -339,9 +349,11 @@ public class VistaPruebas extends javax.swing.JFrame {
 
     private void recuperarDatosParaTabla() {
         limpiarTabla();
-        peticion=new Http();
+        peticion = new Http();
         String json = peticion.sendGet(nameRecurso);
-        construirTabla(json);
+        if (!json.isBlank()) {
+            construirTabla(json);
+        }
         System.out.println(json);
 
     }
@@ -382,16 +394,14 @@ public class VistaPruebas extends javax.swing.JFrame {
             data.put("limiteSuperior", this.jTextFieldLimSup.getText());
 
             var areaObject = (Area) this.modelArea.getSelectedItem();
-            System.out.println("area:"+"{\"id\":"+areaObject.getId()+"}");
-            data.put("area",areaObject.getId());
-            data.put("area",areaObject.getId());
-            
-            
+            System.out.println("area:" + "{\"id\":" + areaObject.getId() + "}");
+            data.put("area", "{\"id\":" + areaObject.getId()+ "}");
+
             var unidad = (UnidadMedida) this.modelUnidades.getSelectedItem();
-            System.out.println("Unidad:"+ "{\"id\":"+unidad.getId()+"}");
-            data.put("unidadMedida", "{\"id\":"+unidad.getId()+"}");
-            
-            peticion=new Http();
+            System.out.println("Unidad:" + "{\"id\":" + unidad.getId() + "}");
+            data.put("unidadMedida", "{\"id\":" + unidad.getId() + "}");
+
+            peticion = new Http();
             peticion.sendPost(data, nameRecurso);
             recuperarDatosParaTabla();
         }
@@ -470,16 +480,24 @@ public class VistaPruebas extends javax.swing.JFrame {
     }
 
     private void addDataComboUnidad() {
-        getUnidadesMedidaObjetcs().forEach((unidad) -> {
-            modelUnidades.addElement(unidad);
-        });
+        String tabla = "/unidades";
+        String json = peticion.sendGet(tabla);
+        if (!json.isBlank()) {
+            getUnidadesMedidaObjetcs().forEach((unidad) -> {
+                modelUnidades.addElement(unidad);
+            });
+        }
 
     }
 
     private void addDataComboArea() {
-        getAreaObjetcs().forEach((area) -> {
-            modelArea.addElement(area);
-        });
+        String tabla = "/areas";
+        String json = peticion.sendGet(tabla);
+        if (!json.isBlank()) {
+            getAreaObjetcs().forEach((area) -> {
+                modelArea.addElement(area);
+            });
+        }
 
     }
 }

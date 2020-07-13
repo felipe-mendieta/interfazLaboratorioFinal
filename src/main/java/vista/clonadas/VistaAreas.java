@@ -239,7 +239,8 @@ public class VistaAreas extends javax.swing.JFrame {
 //                + "]";
 
         String json = peticion.sendGet(nameRecurso);
-        construirTabla(json);
+        if(!json.isBlank())
+            construirTabla(json);
         System.out.println(json);
 
     }

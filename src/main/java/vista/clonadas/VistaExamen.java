@@ -26,10 +26,16 @@ public class VistaExamen extends javax.swing.JFrame {
     private DefaultTableModel modelTabla;
     private final String nameRecurso = "/examenes";
     private Http peticion;
+    private int idOrden;
+    private String medicoSolicitante;
     public VistaExamen() {
         initComponents();
         extrasSetup();
         inicializarComponentes();
+    }
+
+    public void setIdOrden(int idOrden) {
+        this.idOrden = idOrden;
     }
 
     /**
@@ -44,25 +50,21 @@ public class VistaExamen extends javax.swing.JFrame {
         jPanelTitulo = new javax.swing.JPanel();
         jLabelTituloVentana = new javax.swing.JLabel();
         jPanelAcciones = new javax.swing.JPanel();
-        jButtonNuevo = new javax.swing.JButton();
         jButtonActualizar = new javax.swing.JButton();
         jButtonGrabar = new javax.swing.JButton();
-        jButtonCancelar = new javax.swing.JButton();
         jButtonEliminar = new javax.swing.JButton();
         jPanelContenedorTabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTablePruebas = new javax.swing.JTable();
         jPanelInfo = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
+        jTextFieldPaciente = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextFieldTitulo = new javax.swing.JTextField();
         jTextFieldMedico = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jTextFieldLaboratorista = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanelTitulo.setBackground(new java.awt.Color(255, 255, 255));
         jPanelTitulo.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -73,11 +75,7 @@ public class VistaExamen extends javax.swing.JFrame {
         jPanelTitulo.add(jLabelTituloVentana, java.awt.BorderLayout.CENTER);
 
         jPanelAcciones.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanelAcciones.setLayout(new java.awt.GridLayout(5, 1));
-
-        jButtonNuevo.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jButtonNuevo.setText("Nuevo");
-        jPanelAcciones.add(jButtonNuevo);
+        jPanelAcciones.setLayout(new java.awt.GridLayout(3, 1));
 
         jButtonActualizar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jButtonActualizar.setText("Actualizar");
@@ -85,11 +83,12 @@ public class VistaExamen extends javax.swing.JFrame {
 
         jButtonGrabar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jButtonGrabar.setText("Grabar");
+        jButtonGrabar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonGrabarActionPerformed(evt);
+            }
+        });
         jPanelAcciones.add(jButtonGrabar);
-
-        jButtonCancelar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jButtonCancelar.setText("Cancelar");
-        jPanelAcciones.add(jButtonCancelar);
 
         jButtonEliminar.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jButtonEliminar.setText("Eliminar");
@@ -115,27 +114,21 @@ public class VistaExamen extends javax.swing.JFrame {
         jPanelContenedorTabla.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         jPanelInfo.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanelInfo.setLayout(new java.awt.GridLayout(4, 2));
+        jPanelInfo.setLayout(new java.awt.GridLayout(3, 2));
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel3.setText("CÉDULA PACIENTE:");
         jPanelInfo.add(jLabel3);
 
+        jTextFieldPaciente.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jPanelInfo.add(jTextFieldPaciente);
+
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel5.setText("MÉDICO:");
         jPanelInfo.add(jLabel5);
 
-        jTextFieldTitulo.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jPanelInfo.add(jTextFieldTitulo);
-
         jTextFieldMedico.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jPanelInfo.add(jTextFieldMedico);
-
-        jButton1.setText("VER PACIENTES");
-        jPanelInfo.add(jButton1);
-
-        jButton2.setText("VER MEDICOS");
-        jPanelInfo.add(jButton2);
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel4.setText("RESPONSABLE:");
@@ -164,15 +157,19 @@ public class VistaExamen extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanelTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanelAcciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanelInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanelInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanelAcciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanelContenedorTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE))
+                .addComponent(jPanelContenedorTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonGrabarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGrabarActionPerformed
+        grabar();
+    }//GEN-LAST:event_jButtonGrabarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -211,13 +208,9 @@ public class VistaExamen extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     public javax.swing.JButton jButtonActualizar;
-    public javax.swing.JButton jButtonCancelar;
     public javax.swing.JButton jButtonEliminar;
     public javax.swing.JButton jButtonGrabar;
-    public javax.swing.JButton jButtonNuevo;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -230,7 +223,7 @@ public class VistaExamen extends javax.swing.JFrame {
     public javax.swing.JTable jTablePruebas;
     private javax.swing.JTextField jTextFieldLaboratorista;
     private javax.swing.JTextField jTextFieldMedico;
-    private javax.swing.JTextField jTextFieldTitulo;
+    private javax.swing.JTextField jTextFieldPaciente;
     // End of variables declaration//GEN-END:variables
     private void extrasSetup() {
         this.setLocationRelativeTo(null);
@@ -238,19 +231,18 @@ public class VistaExamen extends javax.swing.JFrame {
 
     private void inicializarComponentes() {
         modelTabla = new DefaultTableModel();
-       
+
         modelTabla.addColumn("ID");
         modelTabla.addColumn("Cedula");
         modelTabla.addColumn("Medico");
         modelTabla.addColumn("Resposable");
         modelTabla.addColumn("Fecha de creación");
-        
 
         jTablePruebas.setModel(modelTabla);
-        
-        peticion=new Http();
+
+        peticion = new Http();
         recuperarDatosParaTabla();
-       
+
     }
 
     private void limpiarTabla() {
@@ -263,52 +255,73 @@ public class VistaExamen extends javax.swing.JFrame {
 
     private void recuperarDatosParaTabla() {
         limpiarTabla();
-        peticion=new Http();
+        peticion = new Http();
         String json = peticion.sendGet(nameRecurso);
-        construirTabla(json);
+        if (!json.isBlank()) {
+            construirTabla(json);
+        }
         System.out.println(json);
 
     }
 
     private Object[] construirTabla(String json) {
-        Object[] areas = new Object[7];
+        Object[] areas = new Object[5];
 
         JSONArray areasJSON = new JSONArray(json);
 
         for (int i = 0; i < areasJSON.length(); i++) {
             areas[0] = areasJSON.getJSONObject(i).get("id").toString();
-            areas[1] = areasJSON.getJSONObject(i).get("titulo").toString();
-            areas[2] = areasJSON.getJSONObject(i).get("precio").toString();
-            areas[3] = areasJSON.getJSONObject(i).get("limiteInferior").toString();
-            areas[4] = areasJSON.getJSONObject(i).get("limiteSuperior").toString();
+            
+            var orden = (JSONObject) areasJSON.getJSONObject(i).get("orden");
+            
+            var indexPaciente =(Integer) orden.get("idPaciente");
+            
+            areas[1] = consultarPersonaPorId(indexPaciente).get("cedula");
+            this.jTextFieldPaciente.setText(areas[1].toString());
+            
+            areas[2] = orden.get("medicoSolicitante").toString();
+            this.jTextFieldMedico.setText(areas[2].toString());
+            
+            areas[3] = areasJSON.getJSONObject(i).get("nombreLaboratorista").toString();
+            areas[4] = areasJSON.getJSONObject(i).get("createAt").toString();
+           
 
-            //areas[5] = (areasJSON.getJSONObject(i).get("area").toString()).split("\"")[0];
-            var area = (JSONObject) areasJSON.getJSONObject(i).get("area");
-            areas[5] = area.get("nombre").toString();
 
-            var unidadM = (JSONObject) areasJSON.getJSONObject(i).get("unidadMedida");
-            areas[6] = unidadM.get("unidadDeMedida").toString();
-            //areas[6] = areasJSON.getJSONObject(i).get("unidadMedida").toString();
             modelTabla.addRow(areas);
         }
         return areas;
     }
-
+    private JSONObject consultarPersonaPorId(int indexPaciente) {
+        Http peticionPaciente = new Http();
+        peticionPaciente.setDIRECCION("https://turno-paciente.herokuapp.com");
+        var jsonPaciente = peticionPaciente.sendGet("/api/paciente/" + indexPaciente);
+        JSONObject pacienteJson = new JSONObject(jsonPaciente);
+        return pacienteJson;
+    }
     private void grabar() {
-        if (jTextFieldTitulo.getText().isBlank()) {
+        if (jTextFieldPaciente.getText().isBlank()) {
             JOptionPane.showMessageDialog(null, "Lleno todos los campos");
         } else {
             Map<Object, Object> data;
             data = new HashMap<>();
-            data.put("titulo", this.jTextFieldTitulo.getText());
+            
+            
+            var indexPaciente =(Integer) consultarOrdenPorId(idOrden).get("idPaciente");
+            data.put("idPaciente", indexPaciente);
+            data.put("orden", "{\"id\":" + idOrden + "}");
+            data.put("nombreLaboratorista", this.jTextFieldLaboratorista.getText());
            
-            
-            
-            peticion=new Http();
+            peticion = new Http();
             peticion.sendPost(data, nameRecurso);
             recuperarDatosParaTabla();
         }
 
+    }
+    private JSONObject consultarOrdenPorId(int idOrd) {
+        
+        var jsonString = peticion.sendGet("/ordenes/" + idOrd);
+        JSONObject objetoJson = new JSONObject(jsonString);
+        return objetoJson;
     }
 
     private void eliminar() {
@@ -323,7 +336,7 @@ public class VistaExamen extends javax.swing.JFrame {
                 //Http.sendGet("");
                 JOptionPane.showMessageDialog(null, "Unidad Eliminada.");
             }
-            this.jTextFieldTitulo.setText("");
+            this.jTextFieldPaciente.setText("");
 
             recuperarDatosParaTabla();
 
@@ -341,42 +354,13 @@ public class VistaExamen extends javax.swing.JFrame {
             var index = (String) modelTabla.getValueAt(identificador, 0);
             Map<Object, Object> data;
             data = new HashMap<>();
-            data.put("titulo", this.jTextFieldTitulo.getText());
-            
+            data.put("titulo", this.jTextFieldPaciente.getText());
+
             peticion.sendPost(data, nameRecurso);
             recuperarDatosParaTabla();
 
         }
     }
 
-    private ArrayList<UnidadMedida> getUnidadesMedidaObjetcs() {
-        var listaUM = new ArrayList<UnidadMedida>();
-        String tabla = "/unidades";
-        String json = peticion.sendGet(tabla);
-        JSONArray areasJSON = new JSONArray(json);
-        for (int i = 0; i < areasJSON.length(); i++) {
-            var id = (Integer) areasJSON.getJSONObject(i).get("id");
-            var valor = (String) areasJSON.getJSONObject(i).get("unidadDeMedida");
-            var unidadDeMedida = new UnidadMedida(id, valor);
-            listaUM.add(unidadDeMedida);
-
-        }
-
-        return listaUM;
-    }
-
-    private ArrayList<Area> getAreaObjetcs() {
-        var listaArea = new ArrayList<Area>();
-        String tabla = "/areas";
-        String json = peticion.sendGet(tabla);
-        JSONArray areasJSON = new JSONArray(json);
-        for (int i = 0; i < areasJSON.length(); i++) {
-            var id = (Integer) areasJSON.getJSONObject(i).get("id");
-            var valor = (String) areasJSON.getJSONObject(i).get("nombre");
-            var area = new Area(id, valor);
-            listaArea.add(area);
-
-        }
-        return listaArea;
-    }
+   
 }
